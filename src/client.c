@@ -42,7 +42,7 @@ urlinfo_t *parse_url(char *url)
 
     //2. Set the path pointer to 1 character after the spot returned by strchr.
     path = first_slash + 1;
-    printf("everything that comes after the / is a %s\n", path);
+    //printf("everything that comes after the / is: %s\n", path);
 
     //3. Overwrite the slash with a '\0' so that we are no longer considering anything after the slash.
     *first_slash = '\0';
@@ -52,7 +52,7 @@ urlinfo_t *parse_url(char *url)
     
     //5. Set the port pointer to 1 character after the spot returned by strchr.
     port = first_colon + 1;
-    printf("everything that comes after the colon is %s\n", port);
+    //printf("everything that comes after the colon is: %s\n", port);
     
     //6. Overwrite the colon with a '\0' so that we are just left with the hostname.
     *first_colon = '\0';
@@ -85,11 +85,14 @@ int send_request(int fd, char *hostname, char *port, char *path)
   request_length = sprintf(request,
         "GET /%s HTTP/1.1\n"
         "Host: %s:%s\n"
-        "Connection: close\n",
+        "Connection: close\n"
+        "\n",
         hostname,
         port,
         path 
     );
+
+    printf("Build request: %s\n", request);
 
     rv = send(fd, request, request_length, 0);
 
@@ -109,10 +112,11 @@ int main(int argc, char *argv[])
     fprintf(stderr,"usage: client HOSTNAME:PORT/PATH\n");
     exit(1);
   }
-    urlinfo_t *urlinfo = malloc(sizeof(urlinfo_t));
+    //urlinfo_t *urlinfo = malloc(sizeof(urlinfo_t));
  
     //1. Parse the input URL
-    urlinfo = parse_url(argv[1]); //localhost:3490/d20
+    //urlinfo = parse_url(argv[1]); //localhost:3490/d20
+    struct urlinfo_t *urlinfo = parse_url(argv[1]);
 
     //2. Initialize a socket by calling the `get_socket` function from lib.c
     sockfd = get_socket(urlinfo->hostname, urlinfo->port);
@@ -127,6 +131,7 @@ int main(int argc, char *argv[])
     }
 
     //5. Clean up any allocated memory and open file descriptors.
+    free(urlinfo->hostname);
     free(urlinfo);
     close(sockfd);
 
