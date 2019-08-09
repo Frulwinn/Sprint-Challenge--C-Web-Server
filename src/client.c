@@ -27,10 +27,11 @@ typedef struct urlinfo_t {
 */
 urlinfo_t *parse_url(char *url)
 {
+  //localhost:3490/d20, www.google.com:80/
   // copy the input URL so as not to mutate the original
-  char *hostname = strdup(url);
-  char *port;
-  char *path;
+  char *hostname = strdup(url); //localhost
+  char *port; //3490
+  char *path; //d20
 
   urlinfo_t *urlinfo = malloc(sizeof(urlinfo_t));
 
